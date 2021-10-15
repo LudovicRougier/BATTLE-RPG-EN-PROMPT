@@ -3,8 +3,8 @@
 */
 
 // La fonction askName demande au client de donner son pseudo
-function askName(){
-    return prompt('Quel est votre pseudo ?');
+function askPlayer1(message){
+    return prompt(message);
 }
 
 /* 
@@ -59,17 +59,17 @@ function playRpgGame(){
     var damage = null;
     var parryValue = 0;
 
-    player1['name'] = askName();
+    player1['name'] = askPlayer1( 'Quel est votre nom ?');
     player1['action'] = null;
     player1['previous_action'] = null;
-    player1['strength'] = 10;
-    player1['hp'] = generatingRandomValue( 15, 20 );
+    player1['strength'] = parseInt(askPlayer1('Quelle est votre force'), 10);
+    player1['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 );
 
     computer['name'] = 'Ennemi';
     computer['action'] = null;
     computer['previous_action'] = null;
-    computer['strength'] = 10;
-    computer['hp'] = generatingRandomValue( 15, 20 );
+    computer['strength'] = generatingRandomValue( player1['strength'], player1['strength'] + 5 );
+    computer['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 );
 
 
     turn = generatingRandomValue(1, 2);
