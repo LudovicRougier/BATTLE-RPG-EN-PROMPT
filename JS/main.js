@@ -27,28 +27,28 @@ function generatingRandomValue(min, max) {
     );
 }
 /*
-fonction générant un nombre aléatoire dépendant de la force du joueur
+fonction générant un nombre aléatoire dépendant de la strength du joueur
 
-@param int force
+@param int strength
 
 @return int
 */
-function hitEnnemy(force){
+function hitEnnemy(strength){
     return Math.round(
-        (Math.random()* (force/3)) +1
+        (Math.random()* (strength/3)) +1
     );
 }
 
 /*
-fonction générant un nombre aléatoire dépendant de la force du joueur
+fonction générant un nombre aléatoire dépendant de la strength du joueur
 
-@param int force
+@param int strength
 
 @return int
 */
-function parry(force){
+function parry(strength){
     return Math.round(
-        (Math.random()* (force/3))
+        (Math.random()* (strength/3))
     );
 }
 
@@ -56,62 +56,59 @@ function playRpgGame(){
     var player1 = [];
     var computer = [];
     var turn = null;
-    var playerAction = null;
-    var previousPlayerAction = null;
-    var computerAction = null;
-    var previousComputerAction = null;
     var damage = null;
     var parryValue = 0;
 
     player1['name'] = askName();
-    computer['name'] = 'Ennemi';
-    
-    var forcePlayer1 = 10;
-    var forceComputer = 10;
-
+    player1['action'] = null;
+    player1['previous_action'] = null;
+    player1['strength'] = 10;
     player1['hp'] = generatingRandomValue( 15, 20 );
+
+    computer['name'] = 'Ennemi';
+    computer['action'] = null;
+    computer['previous_action'] = null;
+    computer['strength'] = 10;
     computer['hp'] = generatingRandomValue( 15, 20 );
 
-    console.log( player1 );
-    console.log( computer );
 
     turn = generatingRandomValue(1, 2);
 
     while( computer['hp'] > 0 && player1['hp'] > 0 ) {
-        while(turn === 1 && (playerAction !== 1 || playerAction !== 2 || playerAction !== 3 || playerAction !== 4)){
+        while(turn === 1 && (player1['action'] !== 1 || player1['action'] !== 2 || player1['action'] !== 3 || player1['action'] !== 4)){
             
             alert('C\'est à vous');
-            playerAction = parseInt(prompt('Que voulez vous faire ? \n 1. Attaquer \n 2. Bloquer \n 3. Se préparer \n 4. Fuir'), 10);
+            player1['action'] = parseInt(prompt('Que voulez vous faire ? \n 1. Attaquer \n 2. Bloquer \n 3. Se préparer \n 4. Fuir'), 10);
             
 
-            if (playerAction === 1){
-                damage = hitEnnemy(forcePlayer1); 
+            if (player1['action'] === 1){
+                damage = hitEnnemy(player1['strength']); 
                 
-                if (computerAction === 2){
+                if (computer['action'] === 2){
                     damage = damage - parryValue;
                     if( damage < parryValue ){
                         damage = 0;
                     }
                 }
-                if (previousPlayerAction === 3 ){
+                if (player1['previous_action'] === 3 ){
                     damage += 3;
                 }
                 computer['hp'] = computer['hp'] - damage;
                 alert('Vous avez fait ' + damage + ' points de dégats');
                 console.log(computer['hp']);
             }
-            else if (playerAction === 2){
-                parryValue = parry(forcePlayer1);
+            else if (player1['action'] === 2){
+                parryValue = parry(player1['strength']);
                 alert ('Vous réduirez les dégats de ' + parryValue + ' si vous êtes attaqués ce tour');
             }
-            else if (playerAction === 3){
+            else if (player1['action'] === 3){
                 alert ('Si vous attaquez au prochain tour, vous infligerez 3 points de dégats supplémentaire');
             }
-            else if (playerAction === 4){
+            else if (player1['action'] === 4){
                 alert('Vous avez fuit \n rechargez la page pour recommencer');
                 return 0;
             }
-            else if (player1['hp'] === 0){
+            else if (player1['hp'] <= 0){
                 alert('Vous avez perdu \n rechargez la page pour recommencer');  
                 return 0;
             }
@@ -119,20 +116,19 @@ function playRpgGame(){
                 alert('La réponse doit être 1 ou 2 ou 3 ou 4');
             }
             turn =2;
-            previousPlayerAction = playerAction;
+            player1['previous_action'] = player1['action'];
         }
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
 
-        //computerAction = generatingRandomValue(1, 3);
-        computerAction = 1;
+        computer['action'] = generatingRandomValue(1, 3);
 
-        console.log(computerAction);
+        console.log(computer['action']);
 
-        if (computerAction === 1 && computer['hp'] > 0){
-            damage = hitEnnemy(forceComputer ) 
+        if (computer['action'] === 1 && computer['hp'] > 0){
+            damage = hitEnnemy(computer['strength'] ) 
                 
-            if (playerAction === 2){
+            if (player1['action'] === 2){
                 damage = damage - parryValue;
                 if( damage < parryValue ){
                     damage = 0;
@@ -142,14 +138,14 @@ function playRpgGame(){
             alert('Vous avez subit ' + damage + ' points de dégats');
             console.log(player1['hp']);
         }
-        else if (computerAction === 2  && computer['hp'] > 0){
-            parryValue = parry(forceComputer);
+        else if (computer['action'] === 2  && computer['hp'] > 0){
+            parryValue = parry(computer['strength']);
             alert ('l\''+ computer['name'] + ' réduira les dégats de ' + parryValue + ' si vous attaquez ce tour');
         }
-        else if (computerAction === 3  && computer['hp'] > 0){
+        else if (computer['action'] === 3  && computer['hp'] > 0){
             alert ('Si vous vous faites attaquer au prochain tour, vous subirez 3 points de dégats supplémentaires');
         }
-        else if (computer['hp'] === 0){
+        else if (computer['hp'] <= 0){
             alert('Vous avez gagné \n rechargez la page pour recommencer');  
             return 0;
         }
@@ -157,7 +153,7 @@ function playRpgGame(){
             alert('La réponse doit être 1 ou 2 ou 3 ou 4');
         }
         turn =1;
-        previousComputerAction = computerAction;
+        computer['previous_action'] = computer['action'];
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
     }
