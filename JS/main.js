@@ -62,7 +62,6 @@ function playRpgGame(){
     var previousComputerAction = null;
     var damage = null;
     var parryValue = 0;
-    var modifiedStrength = 0;
 
     player1['name'] = askName();
     computer['name'] = 'Ennemi';
@@ -83,7 +82,7 @@ function playRpgGame(){
             
             alert('C\'est à vous');
             playerAction = parseInt(prompt('Que voulez vous faire ? \n 1. Attaquer \n 2. Bloquer \n 3. Se préparer \n 4. Fuir'), 10);
-            previousPlayerAction = playerAction;
+            
 
             if (playerAction === 1){
                 damage = hitEnnemy(forcePlayer1); 
@@ -106,7 +105,7 @@ function playRpgGame(){
                 alert ('Vous réduirez les dégats de ' + parryValue + ' si vous êtes attaqués ce tour');
             }
             else if (playerAction === 3){
-                alert ('Vous réduirez les dégats de ' + parryValue + ' si vous êtes attaqués ce tour');
+                alert ('Si vous attaquez au prochain tour, vous infligerez 3 points de dégats supplémentaire');
             }
             else if (playerAction === 4){
                 alert('Vous avez fuit \n rechargez la page pour recommencer');
@@ -120,13 +119,13 @@ function playRpgGame(){
                 alert('La réponse doit être 1 ou 2 ou 3 ou 4');
             }
             turn =2;
+            previousPlayerAction = playerAction;
         }
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
 
         //computerAction = generatingRandomValue(1, 3);
         computerAction = 1;
-        previousComputerAction = computerAction;
 
         console.log(computerAction);
 
@@ -148,7 +147,7 @@ function playRpgGame(){
             alert ('l\''+ computer['name'] + ' réduira les dégats de ' + parryValue + ' si vous attaquez ce tour');
         }
         else if (computerAction === 3  && computer['hp'] > 0){
-            
+            alert ('Si vous vous faites attaquer au prochain tour, vous subirez 3 points de dégats supplémentaires');
         }
         else if (computer['hp'] === 0){
             alert('Vous avez gagné \n rechargez la page pour recommencer');  
@@ -158,15 +157,9 @@ function playRpgGame(){
             alert('La réponse doit être 1 ou 2 ou 3 ou 4');
         }
         turn =1;
-        
+        previousComputerAction = computerAction;
+
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
     }
 }
-/* Déclaration des joueurs */
-/* var player1 = [askName()];
-var computer = ['Ordinateur'];
-
-var forcePlayer1 = 10;
-var forceComputer = 10;
- */
 playRpgGame();
