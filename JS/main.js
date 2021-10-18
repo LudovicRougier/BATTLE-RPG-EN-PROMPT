@@ -33,7 +33,7 @@ fonction générant un nombre aléatoire dépendant de la strength du joueur
 
 @return int
 */
-function hitEnnemy(strength, ennemyAction, playerPreviousAction, ennemyHp){
+function hitEnemy(strength, ennemyAction, playerPreviousAction, ennemyHp){
     var damage = Math.round(
         (Math.random()* (strength/3)) +1
     );
@@ -128,7 +128,7 @@ function playRpgGame(){
             if (player1['action'] === ACTION_ATTACK){
 
 
-                 var results = hitEnnemy(player1['strength'], computer['action'], player1['previous_action'], computer['hp']); 
+                 var results = hitEnemy(player1['strength'], computer['action'], player1['previous_action'], computer['hp']); 
 
                 damage = results[0];
                 computer['hp'] = results[1];
@@ -163,7 +163,7 @@ function playRpgGame(){
 
         if (computer['action'] === ACTION_ATTACK && computer['hp'] > 0){
 
-            var results = hitEnnemy(computer['strength'], player1['action'], computer['previous_action'], player1['hp']);
+            var results = hitEnemy(computer['strength'], player1['action'], computer['previous_action'], player1['hp']);
                 
             damage = results[0];
             player1['hp'] = results[1];
