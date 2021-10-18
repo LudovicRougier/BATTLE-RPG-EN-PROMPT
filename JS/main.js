@@ -159,30 +159,41 @@ function playRpgGame(){
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
 
-        computer['action'] = generatingRandomValue(1, 3);
+        // IA de l'adversaire afin qu'il attaque plus souvent au lieu de ne rien faire
+        if (computer.previous_action === ACTION_PREPARE ){
+
+            computer.action = ACTION_ATTACK;
+        } 
+        else if (computer.previous_action === ACTION_DEFEND ) {
+
+            computer.action = ACTION_ATTACK;
+        }
+        else {
+            computer.action = generatingRandomValue(1, 3);
+        }
 
         if (computer['action'] === ACTION_ATTACK && computer['hp'] > 0){
-
             var results = hitEnemy(computer['strength'], player1['action'], computer['previous_action'], player1['hp']);
-                
+        
             damage = results[0];
             player1['hp'] = results[1];
             alert('Vous avez subit ' + damage + ' points de dégats');
         }
-        else if (computer['action'] === 2  && computer['hp'] > 0){
+        else if (computer['action'] === ACTION_DEFEND  && computer['hp'] > 0){
             parryValue = parry(computer['strength']);
             alert ('l\''+ computer['name'] + ' réduira les dégats de ' + parryValue + ' si vous attaquez ce tour');
         }
-        else if (computer['action'] === 3  && computer['hp'] > 0){
+        else if (computer['action'] === ACTION_PREPARE  && computer['hp'] > 0){
             alert ('Si vous vous faites attaquer au prochain tour, vous subirez 3 points de dégats supplémentaires');
         }
         else if (computer['hp'] <= 0){
-            alert('Vous avez gagné \n rechargez la page pour recommencer');  
+            alert('Vous avez gagné \n rechargez la page pour recommencer');
             return 0;
         }
         else {
             alert('La réponse doit être 1 ou 2 ou 3 ou 4');
         }
+        
         turn =1;
         computer['previous_action'] = computer['action'];
 
