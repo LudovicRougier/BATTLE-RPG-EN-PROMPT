@@ -33,10 +33,17 @@ fonction générant un nombre aléatoire dépendant de la strength du joueur
 
 @return int
 */
-function hitEnemy(strength, ennemyAction, playerPreviousAction, ennemyHp){
+function hitEnemy(strength, ennemyAction, playerPreviousAction, ennemyHp, weapon){
     var damage = Math.round(
         (Math.random()* (strength/3)) +1
     );
+    if (weapon === DAGGERS){
+        damage *= 2;
+    }
+    if (weapon === STAFF) {
+        damage = Math.round(damage*1.5);
+        parryValue = 0;
+    }
 
     if (ennemyAction === ACTION_DEFEND){
         damage = damage - parryValue;
@@ -44,7 +51,10 @@ function hitEnemy(strength, ennemyAction, playerPreviousAction, ennemyHp){
             damage = 0;
         }
     }
-    if (playerPreviousAction === ACTION_PREPARE ){
+    if (playerPreviousAction === ACTION_PREPARE && weapon === STAFF ){
+        damage += 6;
+    }
+    else{
         damage += 3;
     }
 
@@ -60,7 +70,12 @@ fonction générant un nombre aléatoire dépendant de la strength du joueur
 
 @return int
 */
-function parry(strength){
+function parry(strength, weapon){
+    if (weapon === SWORD_AND_SHEILD){
+        return Math.round(
+            (Math.random()* (strength) + 5) 
+        );
+    }
     return Math.round(
         (Math.random()* (strength/3))
     );
@@ -68,16 +83,36 @@ function parry(strength){
 
 //Fonction de génération de personnage
 
-function generatingPlayer(name, strength){
-    var character = [];
+function generatingPlayer(name, weapon){
+    var character = {};
+    var characteristic = null;
 
-    hp = generatingRandomValue( strength + 10, strength + 20 );
+// Determination des dégats et des pv en fonction de l'arme choisie
+    if (weapon === SWORD_AND_SHEILD){
+        characteristic = 15;
+        hp = generatingRandomValue( characteristic + 20, characteristic + 40 );
+    }
+    else if (weapon === AXE) {
+        characteristic = 20;
+        hp = generatingRandomValue( characteristic + 10, characteristic + 20 );
+    }
+    else if (weapon === DAGGERS) {
+        characteristic = 12.5;
+        hp = generatingRandomValue( characteristic+ 5, characteristic + 10 );
 
-    character['name'] = name;
-    character['action'] = null;
-    character['previous_action'] = null;
-    character['strength'] = strength;
-    character['hp'] = hp;
+    }
+    else if (weapon === STAFF) {
+        characteristic = 9;
+        hp = generatingRandomValue( characteristic + 3, characteristic + 6 );
+    }
+
+// Création du personnage
+    character.name = name;
+    character.action = null;
+    character.previous_action = null;
+    character.weapon = weapon;
+    character.strength = characteristic;
+    character.hp = hp;
 
     return character;
 }
@@ -99,30 +134,21 @@ function playRpgGame(){
     var turn = null;
     var damage = null;
     var nickname;
-    var strength;
+    var weapon;
     var hp;
 
-    const ACTION_ATTACK = 1;
+/*     const ACTION_ATTACK = 1;
     const ACTION_DEFEND = 2;
     const ACTION_PREPARE = 3;
     const ACTION_RUN = 4;
+ */
 
     nickname = askPlayer1('Quel est votre nom ?');
-    strength = parseInt(askPlayer1('Quelle est votre force'), 10);
+    weapon = parseInt(askPlayer1('Quelle arme voulez vous utiliser ? \n 1. Epée \n 2. Hache \n 3. Dagues \n 4. Bâton'), 10);
     
-/*     player1['name'] = askPlayer1( 'Quel est votre nom ?');
-    player1['action'] = null;
-    player1['previous_action'] = null;
-    player1['strength'] = parseInt(askPlayer1('Quelle est votre force'), 10);
-    player1['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 ); */
-    player1 = generatingPlayer(nickname, strength);
+    player1 = generatingPlayer(nickname, weapon);
 
-/*     computer['name'] = 'Ennemi';
-    computer['action'] = null;
-    computer['previous_action'] = null;
-    computer['strength'] = generatingRandomValue( player1['strength'], player1['strength'] + 5 );
-    computer['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 ); */
-    computer = generatingPlayer('Ennemi', strength);
+    computer = generatingPlayer('Ennemi', weapon);
 
 
     turn = generatingRandomValue(1, 2);
@@ -136,7 +162,7 @@ function playRpgGame(){
             if (player1['action'] === ACTION_ATTACK){
 
 
-                 var results = hitEnemy(player1['strength'], computer['action'], player1['previous_action'], computer['hp']); 
+                 var results = hitEnemy(player1.strength, computer['action'], player1['previous_action'], computer['hp'], player1.weapon); 
 
                 damage = results[0];
                 computer['hp'] = results[1];
@@ -144,7 +170,7 @@ function playRpgGame(){
                 alert('Vous avez fait ' + damage + ' points de dégats');
             }
             else if (player1['action'] === ACTION_DEFEND){
-                parryValue = parry(player1['strength']);
+                parryValue = parry(player1.strength, player1.weapon);
                 alert ('Vous réduirez les dégats de ' + parryValue + ' si vous êtes attaqués ce tour');
             }
             else if (player1['action'] === ACTION_PREPARE){
@@ -159,7 +185,7 @@ function playRpgGame(){
                 return 0;
             }
             else {
-                alert('La réponse doit être 1 ou 2 ou 3 ou 4');
+                alert('La réponse doit être 1 ou 2 ou 3 ou 4, vous avez perdu un tour');
             }
             turn =2;
             player1['previous_action'] = player1['action'];
@@ -183,14 +209,14 @@ function playRpgGame(){
         computer.action = computerDecision(computer.previous_action);
 
         if (computer['action'] === ACTION_ATTACK && computer['hp'] > 0){
-            var results = hitEnemy(computer['strength'], player1['action'], computer['previous_action'], player1['hp']);
+            var results = hitEnemy(computer.strength, player1['action'], computer['previous_action'], player1['hp'], computer.weapon);
         
             damage = results[0];
             player1['hp'] = results[1];
             alert('Vous avez subit ' + damage + ' points de dégats');
         }
         else if (computer['action'] === ACTION_DEFEND  && computer['hp'] > 0){
-            parryValue = parry(computer['strength']);
+            parryValue = parry(computer.strength, computer.weapon);
             alert ('l\''+ computer['name'] + ' réduira les dégats de ' + parryValue + ' si vous attaquez ce tour');
         }
         else if (computer['action'] === ACTION_PREPARE  && computer['hp'] > 0){
@@ -209,6 +235,9 @@ function playRpgGame(){
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
     }
+    if( player1.hp <= 0) {
+        alert('Vous avez perdu \n rechargez la page pour recommencer'); 
+    }
 }
 var parryValue = 0;
 
@@ -216,6 +245,11 @@ const ACTION_ATTACK = 1;
 const ACTION_DEFEND = 2;
 const ACTION_PREPARE = 3;
 const ACTION_RUN = 4;
+
+const SWORD_AND_SHEILD = 1;
+const AXE = 2;
+const DAGGERS = 3;
+const STAFF = 4;
 
 
 playRpgGame();
