@@ -82,6 +82,16 @@ function generatingPlayer(name, strength){
     return character;
 }
 
+function computerDecision(previousAction){
+
+    if (previousAction !== ACTION_ATTACK ){
+
+        return ACTION_ATTACK;
+    } 
+
+    return generatingRandomValue(1, 3);
+}
+
 
 function playRpgGame(){
     var player1 = [];
@@ -107,14 +117,12 @@ function playRpgGame(){
     player1['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 ); */
     player1 = generatingPlayer(nickname, strength);
 
-    console.log(player1);
-
 /*     computer['name'] = 'Ennemi';
     computer['action'] = null;
     computer['previous_action'] = null;
     computer['strength'] = generatingRandomValue( player1['strength'], player1['strength'] + 5 );
     computer['hp'] = generatingRandomValue( player1['strength'] + 10, player1['strength'] + 20 ); */
-    computer = generatingPlayer('Ennemi', strength, hp);
+    computer = generatingPlayer('Ennemi', strength);
 
 
     turn = generatingRandomValue(1, 2);
@@ -159,7 +167,7 @@ function playRpgGame(){
 
         alert(player1['name'] + ' a ' + player1['hp'] + ' points de vie\n l\'' + computer['name'] + ' a ' + computer['hp'] + ' points de vie' );
 
-        // IA de l'adversaire afin qu'il attaque plus souvent au lieu de ne rien faire
+        /* * IA de l'adversaire afin qu'il attaque plus souvent au lieu de ne rien faire
         if (computer.previous_action === ACTION_PREPARE ){
 
             computer.action = ACTION_ATTACK;
@@ -170,7 +178,9 @@ function playRpgGame(){
         }
         else {
             computer.action = generatingRandomValue(1, 3);
-        }
+        } */
+
+        computer.action = computerDecision(computer.previous_action);
 
         if (computer['action'] === ACTION_ATTACK && computer['hp'] > 0){
             var results = hitEnemy(computer['strength'], player1['action'], computer['previous_action'], player1['hp']);
